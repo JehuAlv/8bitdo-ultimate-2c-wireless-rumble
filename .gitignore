@@ -2,16 +2,13 @@
 bin/
 obj/
 *.user
+*.suo
+.vs/
 
-# Python
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.venv/
-venv/
+# build output
 build/
 dist/
-*.egg-info/
+artifacts/
 
 # OS
 Thumbs.db

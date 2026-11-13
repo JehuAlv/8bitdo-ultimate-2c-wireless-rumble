@@ -2,7 +2,7 @@
 
 **Installing modified firmware probably voids your controller's warranty.**
 
-This project flashes 8BitDo's own firmware with small edits. It is reversible — your backup, or 8BitDo's original 1.09, restores the controller — but it is not risk-free, and you do it at your own risk.
+This project flashes 8BitDo's own firmware with small edits. It is reversible — your backup restores the controller — but it is not risk-free, and you do it at your own risk.
 
 What is known and what is not:
 
@@ -11,6 +11,6 @@ What is known and what is not:
 - **One reported behaviour risk.** Making the motors run during an active Bluetooth link has been reported to hang the controller. The toolkit author ran both motors at full strength for 30 seconds without reproducing it. This is a behaviour risk, not a brick risk.
 - **No warranty.** This project makes a lot of assumptions and comes with no warranty of any kind. See the [GPL-3.0 license](LICENSE), sections 15 and 16.
 
-The tool enforces its own safeguards before writing; see [`core/SAFEGUARDS.md`](core/SAFEGUARDS.md). The upstream full disclaimer is kept at [`core/DISCLAIMER.md`](core/DISCLAIMER.md).
+The app enforces its own safeguards before writing; see [SAFEGUARDS.md](SAFEGUARDS.md). Keep your backup: this app restores the file you made, it does not download firmware.
 
 Not affiliated with or endorsed by 8BitDo.

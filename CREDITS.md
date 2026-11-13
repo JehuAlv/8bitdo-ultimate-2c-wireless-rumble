@@ -4,11 +4,13 @@ This project would not exist without the work of others. Please keep these credi
 
 ## The flashing core (GPL-3.0-or-later)
 
-The `core/` directory is a copy of the **U2C Firmware Toolkit** by **Carlos Browne F.**, used under the **GNU General Public License v3.0 or later**:
+The flashing core in [`app/U2cRumble.Core`](app/U2cRumble.Core) is a **C# port** of the **U2C Firmware Toolkit** by **Carlos Browne F.**, used under the **GNU General Public License v3.0 or later**:
 
 - **carlosbrownef-source/8bitdo-ultimate-2c-toolkit** — https://github.com/carlosbrownef-source/8bitdo-ultimate-2c-toolkit
 
-It contains the flashing core, the `bt_xbox` (native Xbox over Bluetooth) and `bt_rumble` (rumble over Bluetooth) tweaks, the safeguards, and the reverse engineering that makes the flashing possible. This project only adds a Windows transport, a Windows validation and the desktop app around it. The full upstream credits are kept in [`core/CREDITS.md`](core/CREDITS.md).
+The original toolkit contains the flashing core, the `bt_xbox` (native Xbox over Bluetooth) and `bt_rumble` (rumble over Bluetooth) tweaks, the safeguards, and the reverse engineering that makes the flashing possible. This project ports the core to C#, adds a native Windows HID transport and wraps it in a desktop app.
+
+The port was validated **byte for byte** against the original core: given the same stock 1.09 backup, both produce the same 77,824-byte image and the same SHA-256. See [`tests/ParityCheck`](tests/ParityCheck).
 
 ## Reverse engineering
 
@@ -26,6 +28,6 @@ It contains the flashing core, the `bt_xbox` (native Xbox over Bluetooth) and `b
 
 ## This project
 
-- **Windows transport, Windows validation and the desktop app** — https://github.com/JehuAlv
+- **C# port, Windows HID transport and the desktop app** — https://github.com/JehuAlv
 
 Not affiliated with or endorsed by 8BitDo.
