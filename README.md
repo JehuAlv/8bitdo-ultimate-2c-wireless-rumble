@@ -34,7 +34,7 @@ The tweaks are small edits to the firmware that runs **inside the controller**. 
 - **Windows 11** (x64).
 - A **USB-C data cable** for the one-time flash. Bluetooth cannot flash the controller.
 - To run the released app, nothing else: it is a single self-contained `.exe`.
-- To build it, the **.NET 10 SDK**. There is **no Python** in this project.
+- To build it, the **.NET 10 SDK**. The app, the flashing core and the signing tool are **100% C#/.NET** (XAML is only the WPF layout). There is **no Python, C++ or PowerShell** in this project.
 
 ## How to use
 
