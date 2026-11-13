@@ -6,6 +6,8 @@ Out of the box, over Bluetooth, the Ultimate 2C Wireless is a plain HID gamepad 
 
 > **Use at your own risk.** Flashing modified firmware probably voids the controller's warranty. It is reversible (your backup restores the original firmware), but it is not risk-free. Read the [disclaimer](#safety-and-disclaimer) before you start. This project is **not affiliated with or endorsed by 8BitDo**.
 
+**[Download the latest release](https://github.com/JehuAlv/8bitdo-ultimate-2c-wireless-rumble/releases/latest)** — a self-contained Windows x64 `.exe`, no .NET runtime or Python needed.
+
 ## What it does
 
 | Feature | What it changes |
