@@ -190,12 +190,13 @@ internal sealed class HidChannel : IChannel
 {
     private const int ReportSize = 64;
 
-    private readonly IntPtr _handle;
+    private IntPtr _handle;
     private readonly IntPtr _event;
     private readonly int _reportId;
     private readonly int _inputLen;
     private readonly int _outputLen;
     private bool _stale;
+    private bool _dead;
     private bool _disposed;
 
     public HidChannel(DeviceInfo device, int reportId)
@@ -316,7 +317,7 @@ internal sealed class HidChannel : IChannel
         if (Marshal.GetLastWin32Error() != Native.ERROR_IO_PENDING)
             return false;
 
-        return Wait(overlapped, timeoutMs, out read);
+        return Wait(ref overlapped, timeoutMs, out read);
     }
 
     private bool TryWrite(byte[] buffer, int timeoutMs)
@@ -330,10 +331,11 @@ internal sealed class HidChannel : IChannel
         if (Marshal.GetLastWin32Error() != Native.ERROR_IO_PENDING)
             return false;
 
-        return Wait(overlapped, timeoutMs, out _);
+        return Wait(ref overlapped, timeoutMs, out _);
     }
 
-    private bool Wait(Native.OVERLAPPED overlapped, int timeoutMs, out int transferred)
+    // the overlapped structure must keep its address until the request completes, so it travels by reference
+    private bool Wait(ref Native.OVERLAPPED overlapped, int timeoutMs, out int transferred)
     {
         transferred = 0;
         var result = Native.WaitForSingleObject(_event, (uint)Math.Max(0, timeoutMs));
@@ -345,14 +347,38 @@ internal sealed class HidChannel : IChannel
             return true;
         }
 
+        // nothing came back: cancel, then give the driver a moment to report the cancellation
         Native.CancelIoEx(_handle, ref overlapped);
-        Native.GetOverlappedResult(_handle, ref overlapped, out _, true);
+        var end = Environment.TickCount64 + 500;
+        while (Environment.TickCount64 < end)
+        {
+            if (Native.GetOverlappedResult(_handle, ref overlapped, out _, false))
+                return false;   // completed (or aborted) after the timeout
+            if (Marshal.GetLastWin32Error() != Native.ERROR_IO_INCOMPLETE)
+                return false;
+            Thread.Sleep(1);
+        }
+
+        // the driver won't let go, so dropping the handle is the only way out; the channel is unusable
+        Kill();
         return false;
+    }
+
+    // closes the handle so a stuck request can't block the thread forever
+    private void Kill()
+    {
+        _dead = true;
+        if (_handle != Native.InvalidHandle)
+        {
+            Native.CloseHandle(_handle);
+            _handle = Native.InvalidHandle;
+        }
+        Thread.Sleep(100);   // give the kernel time to finish with the abandoned request
     }
 
     private void ThrowIfDisposed()
     {
-        if (_disposed)
+        if (_disposed || _dead)
             throw new ObjectDisposedException(nameof(HidChannel));
     }
 

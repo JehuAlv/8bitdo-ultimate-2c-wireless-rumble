@@ -16,6 +16,7 @@ internal static class Native
     public const uint DIGCF_DEVICEINTERFACE = 0x00000010;
 
     public const int ERROR_IO_PENDING = 997;
+    public const int ERROR_IO_INCOMPLETE = 996;
     public const int ERROR_INSUFFICIENT_BUFFER = 122;
     public const int HIDP_STATUS_SUCCESS = 0x00110000;
 
