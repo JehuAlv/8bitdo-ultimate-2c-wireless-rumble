@@ -8,6 +8,12 @@ Out of the box, over Bluetooth, the Ultimate 2C Wireless is a plain HID gamepad 
 
 **[Download the latest release](https://github.com/JehuAlv/8bitdo-ultimate-2c-wireless-rumble/releases/latest)** — a self-contained Windows x64 `.exe`, no .NET runtime or Python needed.
 
+## Screenshots
+
+<img src="docs/screenshots/setup.png" alt="The guided setup: connect the cable, back up, install the tweaks and pair again" width="860">
+
+<img src="docs/screenshots/about.png" alt="What the app does, the controller state and what to do with the SmartScreen warning" width="860">
+
 ## What it does
 
 | Feature | What it changes |
