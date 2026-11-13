@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>U2cRumble</AssemblyName>
+    <RootNamespace>U2cRumble</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>8BitDo Ultimate 2C Wireless Rumble</Product>
+    <Authors>JehuAlv</Authors>
+    <Description>Rumble over Bluetooth and native Xbox for the 8BitDo Ultimate 2C Wireless on Windows.</Description>
+  </PropertyGroup>
+
+</Project>
