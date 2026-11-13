@@ -126,7 +126,7 @@ public partial class MainWindow : Window
     private async void Restore_Click(object sender, RoutedEventArgs e)
     {
         var answer = MessageBox.Show(
-            "Restore the newest recognised backup to the controller?\n\n" +
+            "Restore the backup that holds the original firmware to the controller?\n\n" +
             "This writes to the controller's firmware and undoes the tweaks.",
             "Restore", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
         if (answer == MessageBoxResult.OK)

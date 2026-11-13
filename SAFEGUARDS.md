@@ -10,6 +10,7 @@ These are the checks the app makes before and while it writes to the controller.
 - **A pending update.** If the controller has a firmware update pending, the app refuses to install or restore over it, because it could replace what was written at the next start.
 - **Never the dongle.** The controller's steps never write to the dongle. The app tells them apart by the bootloader's identity, the USB version and how the flash reads back.
 - **Checked edits.** Each tweak is a set of byte edits to the original firmware 1.09, and every edit checks the SHA-256 of the original bytes it replaces before writing.
+- **Restoring your backup.** The app picks the newest backup of the same controller that still holds the original firmware 1.09, so restoring really undoes the tweaks. If no backup has it, it uses the newest recognised one.
 - **Check first, write second.** *Check (no write)* reads the controller by cable and leaves it running. To write, the app first confirms the device is not the dongle, then puts the controller in update mode and checks everything again there, through the bootloader, before it erases anything.
 - **Verified writes.** After writing, the app reads the firmware back and compares it with what it wrote. It only restarts the controller when the comparison matches.
 - **An interrupted write.** If a write stops after erasing, the controller stays in update mode, the app says so, and *Restore backup* still works there. Unplugging the cable does not leave update mode; holding Home for about 12 seconds with the cable out does.
