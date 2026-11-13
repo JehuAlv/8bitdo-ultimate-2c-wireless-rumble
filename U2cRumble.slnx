@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/app/">
+    <Project Path="app/U2cRumble.Core/U2cRumble.Core.csproj" />
+    <Project Path="app/U2cRumble/U2cRumble.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HardwareCheck/HardwareCheck.csproj" />
+    <Project Path="tests/ParityCheck/ParityCheck.csproj" />
+  </Folder>
+</Solution>

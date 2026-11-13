@@ -1,7 +1,7 @@
 <Window x:Class="U2cRumble.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="8BitDo Ultimate 2C Wireless - Bluetooth Rumble"
+        Title="8BitDo Ultimate 2C Wireless - Bluetooth Rumble &amp; XInput"
         Height="680" Width="860" MinHeight="540" MinWidth="720"
         Background="#fafafa"
         FontFamily="Segoe UI" FontSize="13">
@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" FontSize="18" FontWeight="SemiBold" Margin="2,0,0,10"
-                   Text="8BitDo Ultimate 2C Wireless - Bluetooth Rumble"/>
+                   Text="8BitDo Ultimate 2C Wireless - Bluetooth Rumble &amp; XInput"/>
 
         <TabControl Grid.Row="1" Padding="8">
             <TabItem Header="Setup">
@@ -66,7 +66,7 @@
                     <StackPanel Margin="6" MaxWidth="720" HorizontalAlignment="Left">
                         <TextBlock FontSize="15" FontWeight="SemiBold" Text="What this does"/>
                         <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Text="Out of the box, over Bluetooth, the 8BitDo Ultimate 2C Wireless is a plain HID gamepad on Windows: it does not rumble, and many games do not recognise it. This app flashes 8BitDo's own firmware with two small tweaks so the controller reports as an Xbox Series X|S pad (045e:0b13) and vibrates over Bluetooth. The change lives inside the controller, so it works on any Windows PC after one flash. No drivers, no dongle and no virtual pad."/>
+                                   Text="Out of the box, over Bluetooth, the 8BitDo Ultimate 2C Wireless is a plain HID gamepad on Windows: it does not rumble, and many games do not recognise it. This app converts it to XInput over Bluetooth by flashing 8BitDo's own firmware with two small tweaks, so the controller reports as an Xbox Series X|S pad (045e:0b13) and vibrates over Bluetooth. The change lives inside the controller, so it works on any Windows PC after one flash. No drivers, no dongle and no virtual pad."/>
 
                         <TextBlock Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" Text="How to use"/>
                         <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
@@ -74,7 +74,7 @@
 
                         <TextBlock Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" Text="Credits"/>
                         <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Text="The flashing core in the core/ folder is the U2C Firmware Toolkit by Carlos Browne F. (GPL-3.0-or-later), which provides the bt_xbox and bt_rumble tweaks and all the reverse engineering behind them. The update and bootloader protocols come from jgus-org/8bitdo-2c-re-flake (MIT). See CREDITS.md for the full list."/>
+                                   Text="The flashing core is a C# port of the U2C Firmware Toolkit by Carlos Browne F. (GPL-3.0-or-later), which provides the bt_xbox and bt_rumble tweaks and all the reverse engineering behind them. The update and bootloader protocols come from jgus-org/8bitdo-2c-re-flake (MIT). See CREDITS.md for the full list."/>
 
                         <TextBlock Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" Text="License"/>
                         <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
