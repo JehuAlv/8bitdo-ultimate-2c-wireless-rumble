@@ -103,8 +103,15 @@ public static partial class BackupFile
                         && Image.SameUnit(b.Data[Image.MacSector..(Image.MacSector + Image.Sector)], mac))
             .ToList();
 
-    /// <summary>The backup Restore uses: the newest whose firmware the app recognises, never a damaged or foreign one.</summary>
-    public static Backup? Restorable(IEnumerable<Backup> backups) => backups.FirstOrDefault(b => b.State.Known);
+    /// <summary>
+    /// The backup Restore uses: the newest recognised one that still holds the original firmware, so restoring undoes
+    /// the tweaks; if there is none, the newest recognised one.
+    /// </summary>
+    public static Backup? Restorable(IEnumerable<Backup> backups)
+    {
+        var known = backups.Where(b => b.State.Known).ToList();
+        return known.FirstOrDefault(b => b.State.Recipes.Count == 0) ?? known.FirstOrDefault();
+    }
 
     /// <summary>When a backup was made, from its name, or else from the file.</summary>
     public static string Taken(string path)

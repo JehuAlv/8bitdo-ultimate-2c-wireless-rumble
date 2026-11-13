@@ -3,7 +3,7 @@ using U2cRumble.Core;
 // read-only runs of the C# flashing core against a connected controller
 if (args.Length < 1)
 {
-    Console.Error.WriteLine("usage: HardwareCheck <devices|backup|check>");
+    Console.Error.WriteLine("usage: HardwareCheck <devices|backup|check|restore-check>");
     return 2;
 }
 
@@ -30,6 +30,11 @@ try
 
         case "check":
             service.Install(new[] { "bt_xbox", "bt_rumble" }, write: false, disclaimerAccepted: false,
+                Log, Progress);
+            break;
+
+        case "restore-check":
+            service.Restore("backup", write: false, forceUnknown: false, disclaimerAccepted: false,
                 Log, Progress);
             break;
 

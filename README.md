@@ -36,7 +36,7 @@ The tweaks are small edits to the firmware that runs **inside the controller**. 
 4. **Pair again.** Remove the controller in **Settings → Bluetooth &amp; devices** and pair it again, so Windows re-reads the new description.
 5. **Play.** Turn the controller on over Bluetooth. Windows shows it as an Xbox controller and games can make it vibrate.
 
-To go back, **restore your backup** the same way.
+To go back, **restore your backup** the same way. The app puts back the newest backup that still holds the original firmware, so restoring also undoes the tweaks.
 
 ### Recovery
 
@@ -73,9 +73,10 @@ The same core is available from the command line, which is handy for checking a 
 dotnet run --project tests/HardwareCheck/HardwareCheck.csproj -- devices
 dotnet run --project tests/HardwareCheck/HardwareCheck.csproj -- backup
 dotnet run --project tests/HardwareCheck/HardwareCheck.csproj -- check
+dotnet run --project tests/HardwareCheck/HardwareCheck.csproj -- restore-check
 ```
 
-`devices` and `check` never write; `backup` only reads the controller and saves the file.
+`devices`, `check` and `restore-check` never write; `backup` only reads the controller and saves the file.
 
 ### Verify the port
 
