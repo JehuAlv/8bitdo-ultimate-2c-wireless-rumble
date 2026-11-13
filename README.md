@@ -64,7 +64,37 @@ To check that the file is the one published here, compare its SHA-256 with the v
 Get-FileHash .\U2cRumble-1.0.2-win-x64.exe -Algorithm SHA256
 ```
 
-Only a code-signing certificate (OV or EV) removes that warning. An EV certificate is trusted immediately; an OV one builds reputation over time. The app is open source, so the code that runs is the code in this repository.
+Only a code-signing certificate (OV or EV) removes that warning for everyone; a self-signed certificate does not help. The app is open source, so the code that runs is the code in this repository.
+
+### Making the warning go away
+
+**For your own copy:** remove the internet tag that Windows puts on downloaded files. Right-click the `.exe`, open **Properties**, tick **Unblock**, then **OK**. In PowerShell the same thing is:
+
+```powershell
+Unblock-File .\U2cRumble-1.0.2-win-x64.exe
+```
+
+SmartScreen only checks files that carry that tag, so this copy opens without the prompt. It does not change the file's contents and it does not help anyone else.
+
+**For everyone who downloads it:** sign the executable. Only a certificate from a certificate authority removes the prompt at the source:
+
+- **EV certificate**: trusted from the first download.
+- **OV certificate**: the prompt fades as the file builds reputation.
+- **Azure Trusted Signing**: Microsoft's subscription signing service.
+
+All of them verify your identity, so none is free. A self-signed or test certificate keeps the publisher unknown.
+
+When you have a certificate, `scripts/sign.ps1` signs the single-file build with SHA-256 and an RFC 3161 timestamp, then verifies the result:
+
+```powershell
+# with a .pfx file
+.\scripts\sign.ps1 -Pfx .\cert.pfx -Password "the password"
+
+# or with a certificate already in the Windows certificate store
+.\scripts\sign.ps1 -Thumbprint 0123456789ABCDEF0123456789ABCDEF01234567
+```
+
+It needs `signtool.exe` from the Windows SDK (the *Signing Tools* component). Signing changes the file, so recalculate the SHA-256 and upload the signed executable again when you publish.
 
 ## Project layout
 
