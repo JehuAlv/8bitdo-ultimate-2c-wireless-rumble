@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# On each release, point the formula and cask in carlosbrownef-source/homebrew-tap at it.
+name: homebrew
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (default: the latest release)"
+        required: false
+permissions:
+  contents: read   # reads the release here; the tap is pushed with its own deploy key
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: carlosbrownef-source/homebrew-tap
+          ssh-key: ${{ secrets.TAP_DEPLOY_KEY }}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag=${TAG:-$(gh release view --repo "$REPO" --json tagName -q .tagName)}
+          v=${tag#v}
+          tar=$(curl -fsSL "https://github.com/$REPO/archive/refs/tags/$tag.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          sums=""
+          for arch in arm64 x86_64; do  # the zips may be attached shortly after the release is published
+            for i in $(seq 10); do
+              curl -fsSL -o app.zip "https://github.com/$REPO/releases/download/$tag/firmware-toolkit-$v-macos-$arch.zip" && break
+              [ "$i" = 10 ] && exit 1; sleep 30
+            done
+            sums="$sums $(shasum -a 256 app.zip | cut -d' ' -f1)"; rm app.zip
+          done
+          read -r arm intel <<< "$sums"
+          perl -pi -e "s|/tags/v[^/]+\.tar\.gz|/tags/$tag.tar.gz|; s|sha256 \"\w+\"|sha256 \"$tar\"|" Formula/firmware-toolkit.rb
+          perl -pi -e "s|version \"[^\"]+\"|version \"$v\"|; s|arm:\s+\"[0-9a-f]{64}\"|arm:   \"$arm\"|; s|intel: \"[0-9a-f]{64}\"|intel: \"$intel\"|" Casks/firmware-toolkit.rb
+          git diff --quiet && { echo "Tap already at $tag"; exit 0; }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "firmware-toolkit $v"
+          git push

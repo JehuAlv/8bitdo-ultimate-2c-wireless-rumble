@@ -1,0 +1,10 @@
+# normalize line endings in the repository, keep shell scripts LF
+* text=auto eol=lf
+
+# binary files
+*.png binary
+*.jpg binary
+*.ico binary
+*.bin binary
+*.exe binary
+*.dll binary

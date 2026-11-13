@@ -1,0 +1,168 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""macOS IOKit HID transport, through ctypes (no dependencies).
+
+IOKit delivers input reports through a callback on the run loop of the thread that opened the channel, so a
+channel's xfer() must be called from that same thread.
+"""
+import ctypes as C
+import time
+
+from . import DeviceInfo, PermissionDenied
+
+cf = C.cdll.LoadLibrary("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")
+iok = C.cdll.LoadLibrary("/System/Library/Frameworks/IOKit.framework/IOKit")
+P, I32, L = C.c_void_p, C.c_int32, C.c_long
+for f, res, args in [
+    (cf.CFStringCreateWithCString, P, [P, C.c_char_p, C.c_uint32]),
+    (cf.CFStringGetCString, C.c_bool, [P, C.c_char_p, L, C.c_uint32]),
+    (cf.CFNumberGetValue, C.c_bool, [P, L, P]),
+    (cf.CFGetTypeID, L, [P]),
+    (cf.CFNumberGetTypeID, L, []),
+    (cf.CFStringGetTypeID, L, []),
+    (cf.CFSetGetCount, L, [P]),
+    (cf.CFSetGetValues, None, [P, P]),
+    (cf.CFRunLoopGetCurrent, P, []),
+    (cf.CFRunLoopRunInMode, I32, [P, C.c_double, C.c_bool]),
+    (iok.IOHIDManagerCreate, P, [P, C.c_uint32]),
+    (iok.IOHIDManagerSetDeviceMatching, None, [P, P]),
+    (iok.IOHIDManagerOpen, I32, [P, C.c_uint32]),
+    (iok.IOHIDManagerClose, I32, [P, C.c_uint32]),
+    (cf.CFRelease, None, [P]),
+    (iok.IOHIDManagerCopyDevices, P, [P]),
+    (iok.IOHIDDeviceGetProperty, P, [P, P]),
+    (iok.IOHIDDeviceOpen, I32, [P, C.c_uint32]),
+    (iok.IOHIDDeviceClose, I32, [P, C.c_uint32]),
+    (iok.IOHIDDeviceScheduleWithRunLoop, None, [P, P, P]),
+    (iok.IOHIDDeviceUnscheduleFromRunLoop, None, [P, P, P]),
+    (iok.IOHIDDeviceRegisterInputReportCallback, None, [P, P, L, P, P]),
+    (iok.IOHIDDeviceSetReport, I32, [P, C.c_int, L, P, L]),
+]:
+    f.restype, f.argtypes = res, args
+MODE = P.in_dll(cf, "kCFRunLoopDefaultMode")
+REPORT_CB = C.CFUNCTYPE(None, P, I32, P, C.c_int, C.c_uint32, C.POINTER(C.c_uint8), L)
+NOT_PERMITTED = 0xE00002E2
+HANDLED_SOURCE = 4   # kCFRunLoopRunHandledSource
+_managers = []  # devices stay valid while their manager is alive
+_open_channels = 0
+KEEP_MANAGERS = 4
+
+
+def _release_old(managers, open_channels, keep, release):
+    """The page lists devices every few seconds, so old managers must go, but never under an open channel."""
+    if open_channels:
+        return
+    while len(managers) > keep:
+        release(managers.pop(0))
+
+
+def _release_manager(mgr):
+    iok.IOHIDManagerClose(mgr, 0)
+    cf.CFRelease(mgr)
+
+
+def _cfstr(s):
+    return cf.CFStringCreateWithCString(None, s.encode(), 0x08000100)
+
+
+def _prop(dev, key):
+    k = _cfstr(key)
+    v = iok.IOHIDDeviceGetProperty(dev, k)
+    cf.CFRelease(k)
+    if not v:
+        return None
+    if cf.CFGetTypeID(v) == cf.CFNumberGetTypeID():
+        n = C.c_int64()
+        cf.CFNumberGetValue(v, 4, C.byref(n))  # kCFNumberSInt64Type
+        return n.value
+    if cf.CFGetTypeID(v) == cf.CFStringGetTypeID():
+        buf = C.create_string_buffer(256)
+        cf.CFStringGetCString(v, buf, 256, 0x08000100)
+        return buf.value.decode(errors="replace")
+
+
+def list_devices():
+    mgr = iok.IOHIDManagerCreate(None, 0)
+    iok.IOHIDManagerSetDeviceMatching(mgr, None)  # every HID device
+    iok.IOHIDManagerOpen(mgr, 0)
+    _managers.append(mgr)
+    _release_old(_managers, _open_channels, KEEP_MANAGERS, _release_manager)
+    devs = iok.IOHIDManagerCopyDevices(mgr)
+    if not devs:
+        return []
+    n = cf.CFSetGetCount(devs)
+    arr = (P * n)()
+    cf.CFSetGetValues(devs, arr)
+    found = [DeviceInfo(vendor=_prop(d, "VendorID") or 0, product=_prop(d, "ProductID") or 0,
+                        usage_page=_prop(d, "PrimaryUsagePage") or 0, transport=_prop(d, "Transport") or "",
+                        name=_prop(d, "Product") or "", handle=d, version=_prop(d, "VersionNumber") or 0) for d in arr]
+    cf.CFRelease(devs)
+    return found
+
+
+def _on_report(ctx, result, sender, rtype, rid, report, length):
+    ch = _channels.get(sender)
+    if ch:
+        ch._on_report(rid, report, length)
+
+
+# IOKit can't reliably unregister a report callback (its callback set compares entries by context but hashes all their
+# bytes), so a callback freed with its channel could still be called. Every device gets this one callback, which is
+# never freed and routes by device, and a buffer that is never freed; registering them again adds nothing.
+_REPORT_CB = REPORT_CB(_on_report)
+_channels = {}   # device handle → its open channel
+_buffers = {}    # device handle → the buffer IOKit copies its reports into
+
+
+class IOKitChannel:
+    def __init__(self, dev: DeviceInfo, report_id: int):
+        global _open_channels
+        self.dev, self.rid, self.replies = dev.handle, report_id, []
+        r = iok.IOHIDDeviceOpen(self.dev, 0) & 0xFFFFFFFF
+        if r == NOT_PERMITTED:
+            raise PermissionDenied("macOS refused access to the controller. Allow Input Monitoring for this app "
+                                   "in System Settings > Privacy & Security > Input Monitoring, then try again.")
+        if r:
+            raise OSError(f"The device couldn't be opened (IOReturn {r:#x}).")
+        self.loop = cf.CFRunLoopGetCurrent()
+        _channels[self.dev] = self
+        buf = _buffers.setdefault(self.dev, (C.c_uint8 * 64)())
+        iok.IOHIDDeviceRegisterInputReportCallback(self.dev, buf, 64, _REPORT_CB, None)
+        iok.IOHIDDeviceScheduleWithRunLoop(self.dev, self.loop, MODE)
+        _open_channels += 1
+
+    def _on_report(self, rid, report, length):
+        data = bytes(report[:length])
+        if rid and (not data or data[0] != rid):
+            data = bytes([rid]) + data
+        self.replies.append(data)
+
+    def xfer(self, report: bytes, timeout: float = 0.5, accept=None) -> bytes | None:
+        """The first reply after sending or, given accept, the first one it accepts: a late reply to an earlier request
+        that arrives after this one was sent is passed over instead of being taken as its answer."""
+        while cf.CFRunLoopRunInMode(MODE, 0, True) == HANDLED_SOURCE:  # a reply that came after its request timed out
+            pass                                                         # arrives now, not as this request's answer
+        self.replies.clear()
+        buf = (C.c_uint8 * 64).from_buffer_copy(report.ljust(64, b"\0")[:64])
+        if iok.IOHIDDeviceSetReport(self.dev, 1, self.rid, buf, 64):  # kIOHIDReportTypeOutput
+            return None
+        end = time.monotonic() + timeout
+        while True:
+            for r in self.replies:
+                if accept is None or accept(r):
+                    return r
+            self.replies.clear()
+            if time.monotonic() >= end:
+                return None
+            cf.CFRunLoopRunInMode(MODE, 0.02, True)
+
+    def close(self) -> None:
+        global _open_channels
+        if _channels.get(self.dev) is self:
+            del _channels[self.dev]
+        iok.IOHIDDeviceUnscheduleFromRunLoop(self.dev, self.loop, MODE)
+        iok.IOHIDDeviceClose(self.dev, 0)
+        _open_channels -= 1
+
+
+def open_channel(dev: DeviceInfo, report_id: int) -> IOKitChannel:
+    return IOKitChannel(dev, report_id)
