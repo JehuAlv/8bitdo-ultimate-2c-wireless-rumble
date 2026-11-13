@@ -84,14 +84,17 @@ SmartScreen only checks files that carry that tag, so this copy opens without th
 
 All of them verify your identity, so none is free. A self-signed or test certificate keeps the publisher unknown.
 
-When you have a certificate, `scripts/sign.ps1` signs the single-file build with SHA-256 and an RFC 3161 timestamp, then verifies the result:
+When you have a certificate, the C# signing tool in `scripts/SignTool` signs the single-file build with SHA-256 and an RFC 3161 timestamp, then verifies the result:
 
 ```powershell
 # with a .pfx file
-.\scripts\sign.ps1 -Pfx .\cert.pfx -Password "the password"
+dotnet run --project scripts/SignTool -- --pfx .\cert.pfx --password "the password"
 
 # or with a certificate already in the Windows certificate store
-.\scripts\sign.ps1 -Thumbprint 0123456789ABCDEF0123456789ABCDEF01234567
+dotnet run --project scripts/SignTool -- --thumbprint 0123456789ABCDEF0123456789ABCDEF01234567
+
+# check a file without signing it
+dotnet run --project scripts/SignTool -- --verify-only
 ```
 
 It needs `signtool.exe` from the Windows SDK (the *Signing Tools* component). Signing changes the file, so recalculate the SHA-256 and upload the signed executable again when you publish.
