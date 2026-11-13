@@ -219,8 +219,7 @@ internal sealed class HidChannel : IChannel
         _outputLen = caps.OutputReportByteLength > 0 ? caps.OutputReportByteLength : ReportSize;
     }
 
-    public byte[]? Xfer(byte[] report, double timeoutSeconds = 0.5, Func<byte[], bool>? accept = null)
-    {
+    public byte[]? Xfer(byte[] report, double timeoutSeconds = 0.5, Func<byte[], bool>? accept = null)    {
         ThrowIfDisposed();
 
         if (_stale)
@@ -270,6 +269,11 @@ internal sealed class HidChannel : IChannel
 
             var reply = new byte[read];
             Array.Copy(buffer, reply, read);
+
+            // a device with no report IDs (the bootloader) gets a 0x00 report ID from the driver; hidapi drops it
+            if (_reportId == 0 && reply.Length == ReportSize + 1)
+                reply = reply[1..];
+
             if (accept is null || accept(reply))
                 return reply;
         }
