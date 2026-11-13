@@ -8,3 +8,7 @@
 *.bin binary
 *.exe binary
 *.dll binary
+
+# language stats: the app is C#, and the docs are not source code
+*.cs linguist-language=C#
+*.md linguist-documentation
