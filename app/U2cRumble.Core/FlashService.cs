@@ -54,7 +54,7 @@ public sealed class FlashService
 
     /// <summary>Check (write: false) or install the chosen tweaks.</summary>
     public void Install(IReadOnlyList<string> tweaks, bool write, bool disclaimerAccepted,
-        Action<string> log, Action<string, int, int> progress) => WithLock(() =>
+        Action<string> log, Action<string, int, int> progress, Action<Plan>? planned = null) => WithLock(() =>
     {
         NeedAccept(write, disclaimerAccepted);
         var device = Pick("boot", "cable", "cable_360");
@@ -72,12 +72,12 @@ public sealed class FlashService
             return Patch.PlanPatch(channel, backup, stock, keys, mode);
         }
 
-        PlanAndWrite(device, write, MakePlan, Installed, log, progress);
+        PlanAndWrite(device, write, MakePlan, Installed, log, progress, planned);
     });
 
     /// <summary>Restore this unit's newest recognised backup.</summary>
     public void Restore(string source, bool write, bool forceUnknown, bool disclaimerAccepted,
-        Action<string> log, Action<string, int, int> progress) => WithLock(() =>
+        Action<string> log, Action<string, int, int> progress, Action<Plan>? planned = null) => WithLock(() =>
     {
         NeedAccept(write, disclaimerAccepted);
         if (source != "backup")
@@ -91,7 +91,7 @@ public sealed class FlashService
             return Ops.Restore.PlanRestore(channel, backup, source, null, forceUnknown, mode);
         }
 
-        PlanAndWrite(device, write, MakePlan, Restored, log, progress);
+        PlanAndWrite(device, write, MakePlan, Restored, log, progress, planned);
     });
 
     // prints each device with the mode the toolkit sees
@@ -116,7 +116,7 @@ public sealed class FlashService
 
     // runs the plan once over the cable, and only then enters update mode to write; the bootloader starts the firmware again
     private void PlanAndWrite(Found device, bool write, Func<IChannel, string, Plan> makePlan, string doneTemplate,
-        Action<string> log, Action<string, int, int> progress)
+        Action<string> log, Action<string, int, int> progress, Action<Plan>? planned = null)
     {
         if (device.Mode != "boot")
         {
@@ -126,6 +126,7 @@ public sealed class FlashService
                 Probe.CheckDevice(cable, device.Mode, null);
                 first = makePlan(cable, device.Mode);
             }
+            planned?.Invoke(first);
 
             if (!write || (!first.BankA && first.OtherSectors.Count == 0))
             {
@@ -152,6 +153,7 @@ public sealed class FlashService
         try
         {
             var plan = makePlan(bootChannel, "boot");
+            planned?.Invoke(plan);
             wrote = WritePlan(write, bootChannel, plan, log, progress, () => erasing = true);
             restart = entered || wrote;
         }

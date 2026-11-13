@@ -1,4 +1,4 @@
-# 8BitDo Ultimate 2C Wireless — Bluetooth Rumble &amp; XInput for Windows
+# 8BitDo Ultimate 2C Wireless — Bluetooth Rumble & XInput for Windows
 
 **Convert your 8BitDo Ultimate 2C Wireless to XInput over Bluetooth on Windows 11**: real **rumble over Bluetooth** and a **native Xbox controller** identity, with no drivers, no dongle and no virtual pad.
 
@@ -35,7 +35,7 @@ The tweaks are small edits to the firmware that runs **inside the controller**. 
 1. **Back up.** Connect the controller **by cable** and press *Back up controller*. The backup is the safety net: it contains your unit's bootloader check, calibration and Bluetooth keys, and the app refuses to write anything without one.
 2. **Check.** Press *Check (no write)* to see what would change.
 3. **Install the tweaks.** Tick the disclaimer box and press *Install Bluetooth rumble*. The app puts the controller into update mode, writes the changes, verifies them and restarts it.
-4. **Pair again.** Remove the controller in **Settings → Bluetooth &amp; devices** and pair it again, so Windows re-reads the new description.
+4. **Pair again.** Remove the controller in **Settings → Bluetooth & devices** and pair it again, so Windows re-reads the new description.
 5. **Play.** Turn the controller on over Bluetooth. Windows shows it as an Xbox controller and games can make it vibrate.
 
 To go back, **restore your backup** the same way. The app puts back the newest backup that still holds the original firmware, so restoring also undoes the tweaks.
@@ -45,6 +45,20 @@ To go back, **restore your backup** the same way. The app puts back the newest b
 The bootloader is never written, so a failed or interrupted write is always recoverable:
 
 > Turn the controller fully off, hold **L1 + R1**, and plug in the USB cable. It starts in update mode (the LED blinks white). From there you can restore your backup. This works **only over USB**.
+
+### Windows says "Windows protected your PC"
+
+The app is free and open source, and the `.exe` is not signed with a paid code-signing certificate. SmartScreen treats every unsigned app from a new publisher as unknown, so the first time you run it Windows may show **Windows protected your PC** with an *Unknown publisher* note. That warning is about the missing signature and the download count, not about what the app does.
+
+To run it, press **More info**, then **Run anyway**.
+
+To check that the file is the one published here, compare its SHA-256 with the value in `SHA256SUMS.txt` from the same release:
+
+```powershell
+Get-FileHash .\U2cRumble-1.0.2-win-x64.exe -Algorithm SHA256
+```
+
+Only a code-signing certificate (OV or EV) removes that warning. An EV certificate is trusted immediately; an OV one builds reputation over time. The app is open source, so the code that runs is the code in this repository.
 
 ## Project layout
 

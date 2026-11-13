@@ -1,89 +1,630 @@
 <Window x:Class="U2cRumble.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="8BitDo Ultimate 2C Wireless - Bluetooth Rumble &amp; XInput"
-        Height="680" Width="860" MinHeight="540" MinWidth="720"
-        Background="#fafafa"
-        FontFamily="Segoe UI" FontSize="13">
-    <Grid Margin="14">
+        Title="U2cRumble - Bluetooth rumble &amp; XInput for the 8BitDo Ultimate 2C"
+        Width="1020" Height="810" MinWidth="900" MinHeight="620"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
+        Icon="Assets/app.ico">
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" FontSize="18" FontWeight="SemiBold" Margin="2,0,0,10"
-                   Text="8BitDo Ultimate 2C Wireless - Bluetooth Rumble &amp; XInput"/>
+        <!-- header -->
+        <Grid Grid.Row="0" Margin="26,20,26,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <TabControl Grid.Row="1" Padding="8">
-            <TabItem Header="Setup">
-                <Grid Margin="4">
+            <Border Width="42" Height="42" CornerRadius="12" Background="{StaticResource AccentGradient}"
+                    VerticalAlignment="Center">
+                <Path Data="{StaticResource IconGamepad}" Width="26" Height="26" Stretch="Uniform"
+                      Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <StackPanel Grid.Column="1" Margin="13,0,0,0" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="U2cRumble" Style="{StaticResource H1}"/>
+                    <Border Background="#1C2334" CornerRadius="6" Padding="7,2" Margin="9,4,0,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="VersionText" Style="{StaticResource Caption}" Foreground="{StaticResource MutedBrush}" Text="1.0.1"/>
+                    </Border>
+                </StackPanel>
+                <TextBlock Style="{StaticResource Muted}" Margin="0,1,0,0"
+                           Text="Bluetooth rumble and native Xbox/XInput for the 8BitDo Ultimate 2C Wireless"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <RadioButton x:Name="NavSetup" AutomationProperties.AutomationId="NavSetup" Content="Setup" Style="{StaticResource TabNav}" IsChecked="True"
+                             Checked="Nav_Checked"/>
+                <RadioButton x:Name="NavAbout" AutomationProperties.AutomationId="NavAbout" Content="About &amp; help" Style="{StaticResource TabNav}" Margin="4,0,0,0"
+                             Checked="Nav_Checked"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- content -->
+        <Grid Grid.Row="1" Margin="26,14,26,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="330"/>
+                <ColumnDefinition Width="18"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- left: the controller and its current state -->
+            <StackPanel Grid.Column="0">
+                <Border Background="{StaticResource HeroGlow}" BorderBrush="#2B3550" BorderThickness="1"
+                        CornerRadius="16" Padding="14,10,14,14">
+                    <StackPanel>
+                        <Viewbox Height="232" Stretch="Uniform">
+                          <Canvas Width="246" Height="194">
+                            <Canvas.RenderTransform>
+                                <TranslateTransform X="-78" Y="-32"/>
+                            </Canvas.RenderTransform>
+                            <Canvas Width="400" Height="240">
+                                <!-- glow behind the body -->
+                                <Ellipse Canvas.Left="60" Canvas.Top="24" Width="280" Height="170" Opacity="0.5">
+                                    <Ellipse.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop Color="#5B49D6" Offset="0"/>
+                                            <GradientStop Color="#00000000" Offset="1"/>
+                                        </RadialGradientBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+
+                                <!-- soft shadow on the surface -->
+                                <Ellipse Canvas.Left="100" Canvas.Top="198" Width="200" Height="26" Opacity="0.45">
+                                    <Ellipse.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop Color="#000000" Offset="0"/>
+                                            <GradientStop Color="#00000000" Offset="1"/>
+                                        </RadialGradientBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+
+                                <!-- body -->
+                                <Path Stroke="#46557A" StrokeThickness="1.8" StrokeLineJoin="Round">
+                                    <Path.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#2C3654" Offset="0"/>
+                                            <GradientStop Color="#151B2A" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Path.Fill>
+                                    <Path.Data>
+                                        M241.054,155.936 c5.1.17,11.26,1.085,15.371,4.426 s11.447,16.094,16.356,24.2
+                                        s11.532,18.536,11.532,18.536 c2.531,3.918,4.2,2.68,4.2,2.68
+                                        c23.777-7.6,25.357-23.455,26.461-37.192 s-3.991-55.966-8.084-77.5
+                                        s-14.165-29.764-14.165-29.764 a14.011,14.011,0,0,1-5.3-1.442
+                                        A119.913,119.913,0,0,0,271.748,53.854 c-4.246-1.1-20.975-3.511-24.984-4.257
+                                        s-5.1-1.916-5.1-1.916 c-3.821-.119-9.188-.288-15.625-.407
+                                        c-9.1-.187-15.778-.187-26.631-.2 H177.568
+                                        c-8.22.119-15.1.339-20.075.526 a20.265,20.265,0,0,1-5.1,1.916
+                                        c-4.008.746-20.737,3.154-24.983,4.257 a119.9,119.9,0,0,0-15.676,6.02
+                                        a14.012,14.012,0,0,1-5.3,1.442 S96.348,69.46,92.275,91.0
+                                        s-9.188,63.767-8.084,77.5 s2.734,29.594,26.461,37.192
+                                        c0,0,1.7,1.238,4.2-2.68 c0,0,6.624-10.43,11.532-18.536
+                                        s12.262-20.86,16.356-24.2 s10.19-4.257,15.286-4.426
+                                        s41.475-.186,41.475-.186 S235.908,155.766,241.054,155.936 Z
+                                    </Path.Data>
+                                </Path>
+
+                                <!-- shoulder buttons, the thin arcs that sit above the top edge -->
+                                <Path Fill="Transparent" Stroke="#5C6A94" StrokeThickness="1.9"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                      Data="M107.238 61.205 a11.038 11.038 0 0 1 0.408 -4.229 c0.611 -0.985 7.252 -5.384 10.768 -7.218 s7.048 -3.584 16.984 -5.2 a49.254 49.254 0 0 1 18.682 0.747 a3.636 3.636 0 0 1 1.308 0.883 c0.594 0.645 1.495 1.783 1.495 1.783"/>
+                                <Path Fill="Transparent" Stroke="#5C6A94" StrokeThickness="1.9"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                      Data="M291.514 61.204 a11.3 11.3 0 0 0 -0.391 -4.229 c-0.628 -0.985 -7.252 -5.384 -10.768 -7.218 s-7.065 -3.584 -16.984 -5.2 a49.441 49.441 0 0 0 -18.682 0.747 a3.652 3.652 0 0 0 -1.291 0.883 c-0.594 0.645 -1.495 1.783 -1.495 1.783"/>
+
+                                <!-- rim light along the top edge -->
+                                <Path Data="M110 61 C140 50 170 47 200 47 C235 47 266 50 288 59" Stroke="#93A6D8"
+                                      StrokeThickness="1.1" Opacity="0.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                                <!-- left stick -->
+                                <Ellipse Canvas.Left="115.7" Canvas.Top="72.3" Width="34" Height="34"
+                                         Fill="#0A0E18" Stroke="#2F3B57" StrokeThickness="1.4"/>
+                                <Ellipse Canvas.Left="118.2" Canvas.Top="74.8" Width="29" Height="29"
+                                         Fill="Transparent" Stroke="#55648A" StrokeThickness="2"/>
+                                <Ellipse Canvas.Left="123" Canvas.Top="79.6" Width="19.4" Height="19.4"
+                                         Fill="#1B2336" Stroke="#4A5878" StrokeThickness="1.4"/>
+                                <Ellipse Canvas.Left="129.2" Canvas.Top="85.8" Width="7" Height="7" Fill="#26314B"/>
+
+                                <!-- right stick -->
+                                <Ellipse Canvas.Left="214.2" Canvas.Top="108.8" Width="34" Height="34"
+                                         Fill="#0A0E18" Stroke="#2F3B57" StrokeThickness="1.4"/>
+                                <Ellipse Canvas.Left="216.7" Canvas.Top="111.3" Width="29" Height="29"
+                                         Fill="Transparent" Stroke="#55648A" StrokeThickness="2"/>
+                                <Ellipse Canvas.Left="221.5" Canvas.Top="116.1" Width="19.4" Height="19.4"
+                                         Fill="#1B2336" Stroke="#4A5878" StrokeThickness="1.4"/>
+                                <Ellipse Canvas.Left="227.7" Canvas.Top="122.3" Width="7" Height="7" Fill="#26314B"/>
+
+                                <!-- d-pad -->
+                                <Rectangle Canvas.Left="151.2" Canvas.Top="118.5" Width="35" Height="11" RadiusX="3" RadiusY="3"
+                                           Fill="#0B0F1A" Stroke="#3A4664" StrokeThickness="1"/>
+                                <Rectangle Canvas.Left="163.2" Canvas.Top="106.5" Width="11" Height="35" RadiusX="3" RadiusY="3"
+                                           Fill="#0B0F1A" Stroke="#3A4664" StrokeThickness="1"/>
+                                <Ellipse Canvas.Left="163.6" Canvas.Top="118.9" Width="10.2" Height="10.2"
+                                         Fill="#10151F" Stroke="#3A4664" StrokeThickness="1.2"/>
+
+                                <!-- face buttons, Xbox colours -->
+                                <Ellipse Canvas.Left="259.2" Canvas.Top="61.5" Width="15.7" Height="15.7"
+                                         Fill="#F5C542" Stroke="#0A0E18" StrokeThickness="2"/>
+                                <Ellipse Canvas.Left="242.8" Canvas.Top="78" Width="15.7" Height="15.7"
+                                         Fill="#4EA1F7" Stroke="#0A0E18" StrokeThickness="2"/>
+                                <Ellipse Canvas.Left="275.7" Canvas.Top="77.9" Width="15.7" Height="15.7"
+                                         Fill="#F26D6D" Stroke="#0A0E18" StrokeThickness="2"/>
+                                <Ellipse Canvas.Left="259.2" Canvas.Top="94.3" Width="15.7" Height="15.7"
+                                         Fill="#3ED598" Stroke="#0A0E18" StrokeThickness="2"/>
+
+                                <!-- small centre buttons -->
+                                <Ellipse Canvas.Left="164.4" Canvas.Top="63.4" Width="9.2" Height="9.2"
+                                         Fill="#1A2136" Stroke="#3A4664" StrokeThickness="1.2"/>
+                                <Ellipse Canvas.Left="226.4" Canvas.Top="63.4" Width="9.2" Height="9.2"
+                                         Fill="#1A2136" Stroke="#3A4664" StrokeThickness="1.2"/>
+                                <Ellipse Canvas.Left="178.4" Canvas.Top="78.4" Width="9.2" Height="9.2"
+                                         Fill="#1A2136" Stroke="#3A4664" StrokeThickness="1.2"/>
+                                <Ellipse Canvas.Left="210.4" Canvas.Top="78.4" Width="9.2" Height="9.2"
+                                         Fill="#1A2136" Stroke="#3A4664" StrokeThickness="1.2"/>
+                                <Ellipse Canvas.Left="197.6" Canvas.Top="86.1" Width="2.8" Height="2.8" Fill="#4A5878"/>
+
+                                <!-- star button -->
+                                <Ellipse Canvas.Left="193" Canvas.Top="62" Width="12" Height="12"
+                                         Fill="#221B3D" Stroke="#6D5BFF" StrokeThickness="1.4"/>
+                                <Path Fill="#B8A8FF"
+                                      Data="M199 64.6 L200.4 66.6 L202.4 68 L200.4 69.4 L199 71.4 L197.6 69.4 L195.6 68 L197.6 66.6 Z"/>
+                            </Canvas>
+                          </Canvas>
+                        </Viewbox>
+
+                        <Border x:Name="StatusPill" Background="#16261F" CornerRadius="20" Padding="11,5"
+                                HorizontalAlignment="Center" Margin="0,2,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="StatusDot" Width="7" Height="7" Fill="{StaticResource SuccessBrush}"
+                                         VerticalAlignment="Center"/>
+                                <TextBlock x:Name="StatusText" AutomationProperties.AutomationId="StatusText"
+                                           Margin="7,0,0,0" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{StaticResource SuccessBrush}" Text="Looking for the controller..."/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- at a glance -->
+                <Border Style="{StaticResource Card}" Margin="0,12,0,0" Padding="16,14">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Caption}" Text="AT A GLANCE" Margin="0,0,0,10"/>
+
+                        <Grid Margin="0,0,0,9">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Path Data="{StaticResource IconCable}" Width="15" Height="15" Stretch="Uniform"
+                                  Fill="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Style="{StaticResource Muted}" Margin="9,0,0,0" Text="Connection"/>
+                            <TextBlock x:Name="ConnectionText" Grid.Column="2" Style="{StaticResource Body}"
+                                       FontSize="12.5" FontWeight="SemiBold" Text="Checking" TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,9">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Path Data="{StaticResource IconSpark}" Width="15" Height="15" Stretch="Uniform"
+                                  Fill="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Style="{StaticResource Muted}" Margin="9,0,0,0" Text="Firmware"/>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Ellipse x:Name="FirmwareDot" Width="6" Height="6" Fill="#4A5878" Margin="0,0,6,0"
+                                         VerticalAlignment="Center"/>
+                                <TextBlock x:Name="FirmwareText" Style="{StaticResource Body}" FontSize="12.5"
+                                           FontWeight="SemiBold" Text="Not checked"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Path Data="{StaticResource IconShield}" Width="15" Height="15" Stretch="Uniform"
+                                  Fill="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Style="{StaticResource Muted}" Margin="9,0,0,0" Text="Safety backup"/>
+                            <TextBlock x:Name="BackupText" Grid.Column="2" Style="{StaticResource Body}"
+                                       FontSize="12.5" FontWeight="SemiBold" Text="None yet"/>
+                        </Grid>
+
+                        <Rectangle Height="1" Fill="{StaticResource BorderBrush}" Margin="0,12,0,10"/>
+
+                        <Button x:Name="OpenStoreButton" AutomationProperties.AutomationId="OpenStoreButton" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+                                Click="OpenStore_Click" Padding="0,2">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="{StaticResource IconFolder}" Width="14" Height="14" Stretch="Uniform"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      VerticalAlignment="Center"/>
+                                <TextBlock Text="Open backup folder" Margin="7,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- right: the guided steps -->
+            <Grid Grid.Column="2">
+                <Grid x:Name="SetupView">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource SlimScrollBar}"/>
+                        </ScrollViewer.Resources>
+                        <StackPanel Margin="0,0,4,4">
+
+                            <!-- result banner, shown after an operation -->
+                            <Border x:Name="ResultBanner" Visibility="Collapsed" CornerRadius="12" Padding="14,11"
+                                    Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Path x:Name="ResultIcon" Width="17" Height="17" Stretch="Uniform" VerticalAlignment="Top"
+                                          Margin="0,1,0,0"/>
+                                    <TextBlock x:Name="ResultText" Grid.Column="1" Margin="10,0,0,0" TextWrapping="Wrap"
+                                               FontSize="12.5" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- step 1 -->
+                            <Border Style="{StaticResource Card}" Padding="16,14" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="26" Height="26" CornerRadius="13" Background="#202942" VerticalAlignment="Top">
+                                        <TextBlock Text="1" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Accent2Brush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="12,1,12,0">
+                                        <TextBlock Text="Connect the controller by USB-C" Style="{StaticResource H2}"/>
+                                        <TextBlock Style="{StaticResource Muted}" Margin="0,3,0,0"
+                                                   Text="Flashing only works over the cable. Bluetooth and the 2.4 GHz dongle cannot flash."/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Border x:Name="ConnectionChip" Background="#1A2130" CornerRadius="8" Padding="9,4">
+                                            <TextBlock x:Name="ConnectionChipText" FontSize="11.5" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource MutedBrush}" Text="Not found"/>
+                                        </Border>
+                                        <Button x:Name="RefreshButton" AutomationProperties.AutomationId="RefreshButton" Style="{StaticResource GhostButton}" Margin="6,0,0,0"
+                                                Click="Refresh_Click" ToolTip="Look for the controller again" Padding="6">
+                                            <Path Data="{StaticResource IconRefresh}" Width="15" Height="15" Stretch="Uniform"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- step 2 -->
+                            <Border Style="{StaticResource Card}" Padding="16,14" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="26" Height="26" CornerRadius="13" Background="#202942" VerticalAlignment="Top">
+                                        <TextBlock Text="2" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Accent2Brush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="12,1,12,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Back up the controller" Style="{StaticResource H2}"/>
+                                            <Border Background="#1C2334" CornerRadius="6" Padding="6,1" Margin="8,3,0,0">
+                                                <TextBlock Style="{StaticResource Caption}" Text="REQUIRED"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Style="{StaticResource Muted}" Margin="0,3,0,0"
+                                                   Text="Reads the whole flash and saves it in your app data. The app refuses to write without a backup of this unit."/>
+                                    </StackPanel>
+                                    <Button x:Name="BackupButton" AutomationProperties.AutomationId="BackupButton" Grid.Column="2" Style="{StaticResource SecondaryButton}"
+                                            Click="Backup_Click" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Path Data="{StaticResource IconBackup}" Width="15" Height="15" Stretch="Uniform"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                  VerticalAlignment="Center"/>
+                                            <TextBlock Text="Back up" Margin="7,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <!-- step 3, with the notice right above the button that writes -->
+                            <Border x:Name="InstallCard" Background="#171B2E" BorderBrush="#3B2F7E" BorderThickness="1.4"
+                                    CornerRadius="14" Padding="16,14" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="26" Height="26" CornerRadius="13" Background="{StaticResource AccentGradient}"
+                                            VerticalAlignment="Top">
+                                        <TextBlock Text="3" FontSize="12" FontWeight="Bold" Foreground="White"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="12,1,14,0">
+                                        <TextBlock Text="Install the Bluetooth tweaks" Style="{StaticResource H2}"/>
+                                        <TextBlock Style="{StaticResource Muted}" Margin="0,3,0,0"
+                                                   Text="Adds native Xbox identity and rumble over Bluetooth. Writes 819 bytes, then reads them back to verify."/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                        <Button x:Name="InstallButton" AutomationProperties.AutomationId="InstallButton" Style="{StaticResource PrimaryButton}" Width="186"
+                                                Click="Install_Click" ToolTip="Accept the notice below to enable this">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Path Data="{StaticResource IconSpark}" Width="16" Height="16" Stretch="Uniform"
+                                                      Fill="White" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Install" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="CheckButton" AutomationProperties.AutomationId="CheckButton" Style="{StaticResource LinkButton}" Margin="0,4,0,0"
+                                                HorizontalAlignment="Center" Click="Check_Click"
+                                                Content="Check first (no write)"/>
+                                    </StackPanel>
+
+                                    <Rectangle Grid.Row="1" Grid.ColumnSpan="3" Height="1" Fill="#2A3150" Margin="0,12,0,10"/>
+
+                                    <CheckBox x:Name="DisclaimerCheck" AutomationProperties.AutomationId="DisclaimerCheck" Grid.Row="2" Grid.ColumnSpan="3"
+                                              Style="{StaticResource DisclaimerCheck}" Margin="0,0,0,1"
+                                              Checked="Disclaimer_Changed" Unchecked="Disclaimer_Changed">
+                                        <TextBlock TextWrapping="Wrap" FontSize="12">
+                                            I understand this modifies 8BitDo's firmware and probably voids the warranty,
+                                            and that my backup can undo it.
+                                        </TextBlock>
+                                    </CheckBox>
+                                </Grid>
+                            </Border>
+
+                            <!-- step 4 -->
+                            <Border Style="{StaticResource Card}" Padding="16,14" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="26" Height="26" CornerRadius="13" Background="#202942" VerticalAlignment="Top">
+                                        <TextBlock Text="4" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Accent2Brush}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="12,1,0,0">
+                                        <TextBlock Text="Pair it again over Bluetooth" Style="{StaticResource H2}"/>
+                                        <TextBlock Style="{StaticResource Muted}" Margin="0,3,0,0"
+                                                   Text="Unplug the cable. In Windows Settings, remove the controller and pair it again so Windows reads its new Xbox identity. Now games see a real Xbox pad and can make it vibrate."/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- restore -->
+                            <Border Background="Transparent" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                    CornerRadius="12" Padding="14,11" Margin="0,2,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Path Data="{StaticResource IconUndo}" Width="16" Height="16" Stretch="Uniform"
+                                          Fill="{StaticResource MutedBrush}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Margin="11,0,10,0" VerticalAlignment="Center">
+                                        <TextBlock Text="Changed your mind?" Style="{StaticResource Body}" FontSize="12.5" FontWeight="SemiBold"/>
+                                        <TextBlock Style="{StaticResource Muted}" Margin="0,1,0,0" FontSize="12"
+                                                   Text="Restore puts back the backup that still holds the original firmware 1.09."/>
+                                    </StackPanel>
+                                    <Button x:Name="RestoreButton" AutomationProperties.AutomationId="RestoreButton" Grid.Column="2" Style="{StaticResource SecondaryButton}"
+                                            Click="Restore_Click" VerticalAlignment="Center" Content="Restore"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- about and help -->
+                <Grid x:Name="AboutView" Visibility="Collapsed">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource SlimScrollBar}"/>
+                        </ScrollViewer.Resources>
+                        <StackPanel Margin="0,0,4,4">
+
+                            <Border Style="{StaticResource Card}" Padding="18,16">
+                                <StackPanel>
+                                    <TextBlock Text="What this does" Style="{StaticResource H2}"/>
+                                    <TextBlock Style="{StaticResource Body}" Margin="0,7,0,0"
+                                               Text="Out of the box, over Bluetooth, the Ultimate 2C Wireless is a plain HID gamepad on Windows: it does not rumble and many games do not recognise it. This app flashes 8BitDo's own firmware with two small edits, so the controller reports as an Xbox Series X|S pad (045e:0b13) and vibrates over Bluetooth. The change lives inside the controller, so after one flash it works on any Windows PC, with no drivers, no dongle and no virtual pad."/>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                                        <Border Background="#16261F" CornerRadius="9" Padding="11,8" Margin="0,0,8,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Path Data="{StaticResource IconGamepad}" Width="15" Height="15" Stretch="Uniform"
+                                                      Fill="{StaticResource SuccessBrush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Xbox / XInput" Margin="7,0,0,0" FontSize="12"
+                                                           Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Background="#101F2A" CornerRadius="9" Padding="11,8" Margin="0,0,8,0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Path Data="{StaticResource IconBluetooth}" Width="15" Height="15" Stretch="Uniform"
+                                                      Fill="{StaticResource Accent2Brush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Rumble over Bluetooth" Margin="7,0,0,0" FontSize="12"
+                                                           Foreground="{StaticResource Accent2Brush}" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Background="#1A1730" CornerRadius="9" Padding="11,8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Path Data="{StaticResource IconLock}" Width="15" Height="15" Stretch="Uniform"
+                                                      Fill="#B8A8FF" VerticalAlignment="Center"/>
+                                                <TextBlock Text="One-time flash" Margin="7,0,0,0" FontSize="12"
+                                                           Foreground="#B8A8FF" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Windows showed a warning when I opened the app" Style="{StaticResource H2}"/>
+                                    <TextBlock Style="{StaticResource Body}" Margin="0,7,0,0"
+                                               Text="The app is free and open source, and its executable is not signed with a paid code-signing certificate. SmartScreen treats every unsigned app from a new publisher as unknown, so it may show 'Windows protected your PC' the first time you run it. That warning is about the missing signature and the app's download count, not about what the app does."/>
+                                    <TextBlock Style="{StaticResource Body}" Margin="0,10,0,0"
+                                               Text="To run it: press More info, then Run anyway. To be sure the file is the one published here, compare its SHA-256 with the SHA256SUMS.txt attached to the release."/>
+
+                                    <Border Background="#1E1A10" CornerRadius="9" Padding="12,10" Margin="0,12,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Path Data="{StaticResource IconInfo}" Width="15" Height="15" Stretch="Uniform"
+                                                  Fill="{StaticResource WarnBrush}" VerticalAlignment="Top" Margin="0,1,0,0"/>
+                                            <TextBlock Grid.Column="1" Style="{StaticResource Muted}" Margin="9,0,0,0" FontSize="12"
+                                                       Text="Only a code-signing certificate (OV or EV) removes that warning. An EV certificate is trusted immediately; an OV one builds reputation over time. The SHA-256 file lets anyone verify the download in the meantime."/>
+                                        </Grid>
+                                    </Border>
+
+                                    <Button Style="{StaticResource LinkButton}" HorizontalAlignment="Left" Margin="0,10,0,0"
+                                            Click="OpenRelease_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Open the release page"/>
+                                            <Path Data="{StaticResource IconExternal}" Width="12" Height="12" Stretch="Uniform"
+                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                  Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="If a write is interrupted" Style="{StaticResource H2}"/>
+                                    <TextBlock Style="{StaticResource Body}" Margin="0,7,0,0"
+                                               Text="The bootloader is never written, so recovery is always possible over USB: turn the controller fully off, hold L1 + R1 and plug in the cable. It starts in update mode (the LED blinks white) and Restore works from there. Unplugging the cable does not leave update mode; holding Home for about 12 seconds with the cable out does."/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Credits and licence" Style="{StaticResource H2}"/>
+                                    <TextBlock Style="{StaticResource Body}" Margin="0,7,0,0"
+                                               Text="The flashing core is a C# port of the U2C Firmware Toolkit by Carlos Browne F. (GPL-3.0-or-later), which provides the bt_xbox and bt_rumble tweaks and the reverse engineering behind them. The update and bootloader protocols come from jgus-org/8bitdo-2c-re-flake (MIT). The port was checked byte for byte against the original core."/>
+
+                                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                        <Button Style="{StaticResource LinkButton}" Click="OpenRepo_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Repository"/>
+                                                <Path Data="{StaticResource IconExternal}" Width="12" Height="12" Stretch="Uniform"
+                                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                      Margin="5,0,0,0" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource LinkButton}" Margin="14,0,0,0" Click="OpenCredits_Click">
+                                            <TextBlock Text="Full credits and safeguards"/>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <TextBlock Style="{StaticResource Caption}" Margin="0,14,0,0"
+                                               Text="GPL-3.0-OR-LATER  ·  NOT AFFILIATED WITH OR ENDORSED BY 8BITDO"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!-- footer: progress and activity log -->
+        <Grid Grid.Row="2" Margin="26,12,26,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border x:Name="ProgressPanel" Visibility="Collapsed" Style="{StaticResource Card}" Padding="16,12"
+                    Margin="0,0,0,10">
+                <StackPanel>
+                    <Grid Margin="0,0,0,8">
+                        <TextBlock x:Name="ProgressLabel" Style="{StaticResource Body}" FontSize="12.5" FontWeight="SemiBold"
+                                   Text="Working..."/>
+                        <TextBlock x:Name="ProgressPercent" Style="{StaticResource Caption}" HorizontalAlignment="Right"
+                                   Foreground="{StaticResource Accent2Brush}" Text=""/>
+                    </Grid>
+                    <ProgressBar x:Name="ProgressBar" Style="{StaticResource SlimProgress}" Minimum="0" Maximum="100" Value="0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Style="{StaticResource Card}" Padding="14,10">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Border Grid.Row="0" Background="#ffffff" BorderBrush="#e0e0e0"
-                            BorderThickness="1" CornerRadius="4" Padding="10">
-                        <StackPanel>
-                            <TextBlock Text="Controller status" FontWeight="SemiBold"/>
-                            <TextBlock x:Name="StatusText" Margin="0,4,0,0" TextWrapping="Wrap"
-                                       Foreground="#555555" Text="Checking..."/>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource Caption}" Text="ACTIVITY LOG" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="LogHint" Style="{StaticResource Caption}" Margin="10,0,0,0"
+                                       Foreground="#5E6B84" Text="every step is listed here" VerticalAlignment="Center"/>
                         </StackPanel>
-                    </Border>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource GhostButton}" Click="CopyLog_Click" ToolTip="Copy the log to the clipboard">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{StaticResource IconCopy}" Width="13" Height="13" Stretch="Uniform"
+                                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                          VerticalAlignment="Center"/>
+                                    <TextBlock Text="Copy" Margin="6,0,0,0" FontSize="12"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="LogToggle" AutomationProperties.AutomationId="LogToggle" Style="{StaticResource GhostButton}" Margin="4,0,0,0" Click="LogToggle_Click"
+                                    ToolTip="Show or hide the log">
+                                <Path x:Name="LogChevron" Data="{StaticResource IconChevron}" Width="14" Height="14" Stretch="Uniform"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Path.RenderTransform><RotateTransform x:Name="LogChevronRotation" Angle="180"/></Path.RenderTransform>
+                                </Path>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
 
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,12,0,0">
-                        <Button x:Name="RefreshButton" Content="Refresh" Padding="12,6"
-                                Click="Refresh_Click"/>
-                        <Button x:Name="BackupButton" Content="Back up controller" Padding="12,6"
-                                Margin="8,0,0,0" Click="Backup_Click"/>
-                        <Button x:Name="CheckButton" Content="Check (no write)" Padding="12,6"
-                                Margin="8,0,0,0" Click="Check_Click"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0">
-                        <Button x:Name="InstallButton" Content="Install Bluetooth rumble" Padding="12,6"
-                                Click="Install_Click"/>
-                        <Button x:Name="RestoreButton" Content="Restore backup" Padding="12,6"
-                                Margin="8,0,0,0" Click="Restore_Click"/>
-                    </StackPanel>
-
-                    <CheckBox x:Name="DisclaimerCheck" Grid.Row="3" Margin="0,14,0,0"
-                              Checked="Disclaimer_Changed" Unchecked="Disclaimer_Changed"
-                              Content="I understand this modifies the controller's firmware and probably voids its warranty."/>
-
-                    <TextBox x:Name="LogBox" Grid.Row="4" Margin="0,10,0,0" IsReadOnly="True"
-                             AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                             FontFamily="Consolas" FontSize="12" Background="#ffffff"
-                             BorderBrush="#e0e0e0" Padding="6"/>
+                    <TextBox x:Name="LogBox" Grid.Row="1" AutomationProperties.AutomationId="LogBox" Height="84" Margin="0,8,0,0"
+                             IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                             Background="#0A0D14" Foreground="#9FB0CB" BorderThickness="0" Padding="9,7"
+                             FontFamily="Cascadia Mono, Consolas" FontSize="11.5"
+                             TextOptions.TextFormattingMode="Display">
+                        <TextBox.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource SlimScrollBar}"/>
+                        </TextBox.Resources>
+                    </TextBox>
                 </Grid>
-            </TabItem>
-
-            <TabItem Header="About">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="6" MaxWidth="720" HorizontalAlignment="Left">
-                        <TextBlock FontSize="15" FontWeight="SemiBold" Text="What this does"/>
-                        <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Text="Out of the box, over Bluetooth, the 8BitDo Ultimate 2C Wireless is a plain HID gamepad on Windows: it does not rumble, and many games do not recognise it. This app converts it to XInput over Bluetooth by flashing 8BitDo's own firmware with two small tweaks, so the controller reports as an Xbox Series X|S pad (045e:0b13) and vibrates over Bluetooth. The change lives inside the controller, so it works on any Windows PC after one flash. No drivers, no dongle and no virtual pad."/>
-
-                        <TextBlock Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" Text="How to use"/>
-                        <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Text="1. Connect the controller with the USB cable.&#10;2. Back up controller (the safety net; the tool refuses to write without a backup).&#10;3. Check (no write) to see what would change.&#10;4. Tick the box and press Install Bluetooth rumble.&#10;5. Unplug, remove the controller in Windows Bluetooth settings, pair it again and play.&#10;&#10;To undo it, restore the backup the same way. The bootloader is never written, so recovery over USB is always possible: turn the controller off, hold L1 + R1 and plug in the cable."/>
-
-                        <TextBlock Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" Text="Credits"/>
-                        <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Text="The flashing core is a C# port of the U2C Firmware Toolkit by Carlos Browne F. (GPL-3.0-or-later), which provides the bt_xbox and bt_rumble tweaks and all the reverse engineering behind them. The update and bootloader protocols come from jgus-org/8bitdo-2c-re-flake (MIT). See CREDITS.md for the full list."/>
-
-                        <TextBlock Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" Text="License"/>
-                        <TextBlock Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Text="GPL-3.0-or-later. Not affiliated with or endorsed by 8BitDo. Installing modified firmware probably voids your controller's warranty."/>
-
-                        <TextBlock x:Name="VersionText" Margin="0,14,0,0" Foreground="#777777"/>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

@@ -8,11 +8,20 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>U2cRumble</AssemblyName>
     <RootNamespace>U2cRumble</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Product>8BitDo Ultimate 2C Wireless Rumble</Product>
+    <AssemblyTitle>U2cRumble</AssemblyTitle>
+    <Company>JehuAlv</Company>
     <Authors>JehuAlv</Authors>
+    <Copyright>Copyright (C) 2026 JehuAlv. GPL-3.0-or-later.</Copyright>
     <Description>Rumble over Bluetooth and native Xbox (XInput) for the 8BitDo Ultimate 2C Wireless on Windows.</Description>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\U2cRumble.Core\U2cRumble.Core.csproj" />
