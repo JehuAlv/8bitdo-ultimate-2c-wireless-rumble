@@ -32,6 +32,22 @@
         <GradientStop Color="#3FC9F0" Offset="1"/>
     </LinearGradientBrush>
 
+    <!-- same colours and layers as Assets/app.ico, so the logo matches the exe -->
+    <LinearGradientBrush x:Key="BrandGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#8B6CFF" Offset="0"/>
+        <GradientStop Color="#6355F5" Offset="0.42"/>
+        <GradientStop Color="#2E7FEA" Offset="0.76"/>
+        <GradientStop Color="#22C8E6" Offset="1"/>
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="BrandGloss" Center="0.26,0.1" GradientOrigin="0.26,0.1" RadiusX="0.9" RadiusY="0.9">
+        <GradientStop Color="#42FFFFFF" Offset="0"/>
+        <GradientStop Color="#00FFFFFF" Offset="1"/>
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="BrandDepth" StartPoint="0,0.45" EndPoint="0,1">
+        <GradientStop Color="#002A1A86" Offset="0"/>
+        <GradientStop Color="#382A1A86" Offset="1"/>
+    </LinearGradientBrush>
+
     <LinearGradientBrush x:Key="HeroGlow" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#2A1F5C" Offset="0"/>
         <GradientStop Color="#141828" Offset="1"/>
@@ -52,7 +68,7 @@
     <Geometry x:Key="IconExternal">M14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3h-7zM5 5h5v2H7v10h10v-3h2v5H5V5z</Geometry>
     <Geometry x:Key="IconFolder">M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z</Geometry>
     <Geometry x:Key="IconChevron">M7 9l5 5 5-5 1.4 1.4L12 16.8 5.6 10.4z</Geometry>
-    <Geometry x:Key="IconGamepad">M7 8h10a5 5 0 0 1 5 5v1a4 4 0 0 1-4 4c-1.3 0-2.3-.6-3.2-1.5L13 15h-2l-1.8 1.5C8.3 17.4 7.3 18 6 18a4 4 0 0 1-4-4v-1a5 5 0 0 1 5-5zm0 3v2H5v2h2v2h2v-2h2v-2H9v-2H7zm8 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm3-2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z</Geometry>
+    <Geometry x:Key="IconGamepad">F0 M6.6,7.2 L17.4,7.2 C19.56,7.2 21,8.76 21.12,10.68 C21.24,12.84 20.76,15 19.8,16.32 C19.08,17.28 17.88,17.28 17.04,16.44 L15.84,15.24 C14.76,14.16 9.24,14.16 8.16,15.24 L6.96,16.44 C6.12,17.28 4.92,17.28 4.2,16.32 C3.24,15 2.76,12.84 2.88,10.68 C3,8.76 4.44,7.2 6.6,7.2 Z M7.44,8.64 L8.88,8.64 L8.88,10.44 L10.68,10.44 L10.68,11.88 L8.88,11.88 L8.88,13.68 L7.44,13.68 L7.44,11.88 L5.64,11.88 L5.64,10.44 L7.44,10.44 Z M13.85,11.16 A1.03,1.03 0 1 0 15.91,11.16 A1.03,1.03 0 1 0 13.85,11.16 Z M16.25,11.16 A1.03,1.03 0 1 0 18.31,11.16 A1.03,1.03 0 1 0 16.25,11.16 Z</Geometry>
     <Geometry x:Key="IconLock">M12 2a5 5 0 0 0-5 5v3H5v12h14V10h-2V7a5 5 0 0 0-5-5zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3z</Geometry>
     <Geometry x:Key="IconDot">M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z</Geometry>
 

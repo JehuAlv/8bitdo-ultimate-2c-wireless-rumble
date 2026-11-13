@@ -25,11 +25,17 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Border Width="42" Height="42" CornerRadius="12" Background="{StaticResource AccentGradient}"
-                    VerticalAlignment="Center">
-                <Path Data="{StaticResource IconGamepad}" Width="26" Height="26" Stretch="Uniform"
-                      Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Border>
+            <Grid Width="42" Height="42" VerticalAlignment="Center">
+                <Border CornerRadius="9.5" Background="{StaticResource BrandGradient}"/>
+                <Border CornerRadius="9.5" Background="{StaticResource BrandGloss}"/>
+                <Border CornerRadius="9.5" Background="{StaticResource BrandDepth}"/>
+                <Path Data="{StaticResource IconGamepad}" Stretch="Uniform" Fill="#382A1A86">
+                    <Path.RenderTransform>
+                        <TranslateTransform Y="0.7"/>
+                    </Path.RenderTransform>
+                </Path>
+                <Path Data="{StaticResource IconGamepad}" Stretch="Uniform" Fill="White"/>
+            </Grid>
 
             <StackPanel Grid.Column="1" Margin="13,0,0,0" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
@@ -594,7 +600,8 @@
                                        Foreground="#5E6B84" Text="every step is listed here" VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource GhostButton}" Click="CopyLog_Click" ToolTip="Copy the log to the clipboard">
+                            <Button Style="{StaticResource GhostButton}" Click="CopyLog_Click" ToolTip="Copy the log to the clipboard"
+                                    AutomationProperties.AutomationId="CopyLogButton">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="{StaticResource IconCopy}" Width="13" Height="13" Stretch="Uniform"
                                           Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"

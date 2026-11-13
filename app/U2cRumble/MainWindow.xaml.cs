@@ -184,6 +184,7 @@ public partial class MainWindow : Window
     private async Task<bool> RunAsync(string what, Action action)
     {
         SetBusy(true);
+        ResultBanner.Visibility = Visibility.Collapsed;
         SetStatus("Working...", StatusKind.Busy);
         Log(string.Empty);
         Log($"> {what}");
@@ -196,7 +197,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             ok = false;
-            Log(ex.Message);
+            Log(ex.ToString());
             ShowResult(false, ex.Message);
         }
         finally
@@ -265,6 +266,7 @@ public partial class MainWindow : Window
         ResultIcon.Fill = BrushFor(ok ? StatusKind.Ok : StatusKind.Warn);
         ResultText.Foreground = BrushFor(ok ? StatusKind.Ok : StatusKind.Warn);
         ResultText.Text = message;
+        ResultBanner.BringIntoView();
     }
 
     // disables the buttons while the core works, and shows the progress strip
@@ -364,14 +366,17 @@ public partial class MainWindow : Window
                 "Install"))
             return;
 
+        var accepted = DisclaimerCheck.IsChecked == true;
         var ok = await RunAsync("install", () => _service.Install(
             new[] { "bt_xbox", "bt_rumble" }, write: true,
-            disclaimerAccepted: DisclaimerCheck.IsChecked == true, Log, ShowProgress, ReportPlan));
+            disclaimerAccepted: accepted, Log, ShowProgress, ReportPlan));
         if (!ok)
             return;
 
         SetFirmware("Rumble + Xbox", StatusKind.Ok);
-        ShowResult(true, "Installed and verified. Unplug the cable, then remove and pair the controller again in Windows Bluetooth settings.");
+        ShowResult(true, _planChanges
+            ? "Installed and verified. Unplug the cable, then remove and pair the controller again in Windows Bluetooth settings."
+            : "The tweaks were already installed, so nothing was written.");
     }
 
     private async void Restore_Click(object sender, RoutedEventArgs e)
@@ -381,14 +386,17 @@ public partial class MainWindow : Window
                 "Restore"))
             return;
 
+        var accepted = DisclaimerCheck.IsChecked == true;
         var ok = await RunAsync("restore", () => _service.Restore(
             "backup", write: true, forceUnknown: false,
-            disclaimerAccepted: DisclaimerCheck.IsChecked == true, Log, ShowProgress, ReportPlan));
+            disclaimerAccepted: accepted, Log, ShowProgress, ReportPlan));
         if (!ok)
             return;
 
         SetFirmware("Original 1.09", StatusKind.Muted);
-        ShowResult(true, "Original firmware restored and verified. If Bluetooth changed, remove and pair the controller again.");
+        ShowResult(true, _planChanges
+            ? "Original firmware restored and verified. If Bluetooth changed, remove and pair the controller again."
+            : "The controller already has the original firmware, so nothing was written.");
     }
 
     private void Disclaimer_Changed(object sender, RoutedEventArgs e)

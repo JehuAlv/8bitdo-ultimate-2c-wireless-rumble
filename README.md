@@ -61,7 +61,7 @@ To run it, press **More info**, then **Run anyway**.
 To check that the file is the one published here, compare its SHA-256 with the value in `SHA256SUMS.txt` from the same release:
 
 ```powershell
-Get-FileHash .\U2cRumble-1.0.2-win-x64.exe -Algorithm SHA256
+Get-FileHash .\U2cRumble-1.0.3-win-x64.exe -Algorithm SHA256
 ```
 
 Only a code-signing certificate (OV or EV) removes that warning for everyone; a self-signed certificate does not help. The app is open source, so the code that runs is the code in this repository.
@@ -71,7 +71,7 @@ Only a code-signing certificate (OV or EV) removes that warning for everyone; a 
 **For your own copy:** remove the internet tag that Windows puts on downloaded files. Right-click the `.exe`, open **Properties**, tick **Unblock**, then **OK**. In PowerShell the same thing is:
 
 ```powershell
-Unblock-File .\U2cRumble-1.0.2-win-x64.exe
+Unblock-File .\U2cRumble-1.0.3-win-x64.exe
 ```
 
 SmartScreen only checks files that carry that tag, so this copy opens without the prompt. It does not change the file's contents and it does not help anyone else.
