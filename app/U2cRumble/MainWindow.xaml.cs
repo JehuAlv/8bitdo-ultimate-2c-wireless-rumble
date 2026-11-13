@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using U2cRumble.Core;
 using U2cRumble.Core.Ops;
@@ -21,7 +22,10 @@ public partial class MainWindow : Window
 
     private readonly FlashService _service = new();
     private readonly DispatcherTimer _hintTimer = new() { Interval = TimeSpan.FromSeconds(2.5) };
+    private readonly DispatcherTimer _watchTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private bool _busy;
+    private bool _probing;
+    private bool _cableShown;
     private IReadOnlyList<string> _modes = Array.Empty<string>();
     private string _deviceSignature = string.Empty;
     private bool _planChanges;
@@ -52,7 +56,15 @@ public partial class MainWindow : Window
         };
 
         Log($"Store: {_service.Store}");
-        Loaded += async (_, _) => await RefreshDevicesAsync();
+
+        // keeps the cable and Bluetooth state live while the window is open
+        _watchTimer.Tick += async (_, _) => await PollAsync();
+        Loaded += async (_, _) =>
+        {
+            await RefreshDevicesAsync();
+            _watchTimer.Start();
+        };
+        Closed += (_, _) => _watchTimer.Stop();
     }
 
     // makes the title bar match the dark window on Windows 11
@@ -103,6 +115,45 @@ public partial class MainWindow : Window
             SetBusy(false);
         }
     }
+
+    // polls for a plugged or unplugged controller and redraws only when the state changes
+    private async Task PollAsync()
+    {
+        if (_busy || _probing)
+            return;
+
+        _probing = true;
+        try
+        {
+            var modes = await Task.Run(() => _service.Find().Select(f => f.Mode).ToList());
+            if (SameModes(modes, _modes))
+                return;
+
+            var lines = await Task.Run(() => _service.DescribeDevices());
+            var signature = string.Join("\n", lines);
+            if (signature != _deviceSignature)
+            {
+                _deviceSignature = signature;
+                foreach (var line in lines)
+                    Log(line);
+            }
+
+            _modes = modes;
+            ApplyDeviceState(modes);
+        }
+        catch
+        {
+            // a poll that fails must not interrupt whatever the window is doing
+        }
+        finally
+        {
+            _probing = false;
+        }
+    }
+
+    // the order devices come back in is not stable, so compare them sorted
+    private static bool SameModes(IReadOnlyList<string> a, IReadOnlyList<string> b) =>
+        a.Count == b.Count && a.OrderBy(m => m).SequenceEqual(b.OrderBy(m => m));
 
     // maps the device modes onto the status pill, the connection row and the buttons
     private void ApplyDeviceState(IReadOnlyList<string> modes)
@@ -162,7 +213,43 @@ public partial class MainWindow : Window
         };
         BackupText.Foreground = count > 0 ? Brush("SuccessBrush") : Brush("MutedBrush");
 
+        SetCableVisual(boot || cable);
         ApplyButtonState();
+    }
+
+    // fades the drawn cable in over USB, and out when the controller is unplugged
+    private void SetCableVisual(bool shown)
+    {
+        if (shown == _cableShown)
+            return;
+
+        _cableShown = shown;
+        var pulse = (Storyboard)CableLayer.Resources["CablePulse"];
+
+        if (shown)
+        {
+            CableLayer.Visibility = Visibility.Visible;
+            CableLayer.Opacity = 1;
+            CableLayer.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(280))
+            {
+                FillBehavior = FillBehavior.Stop,
+            });
+            pulse.Begin(this, true);
+            return;
+        }
+
+        pulse.Stop(this);
+        CableLayer.Opacity = 0;
+        var fade = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(180))
+        {
+            FillBehavior = FillBehavior.Stop,
+        };
+        fade.Completed += (_, _) =>
+        {
+            if (!_cableShown)
+                CableLayer.Visibility = Visibility.Collapsed;
+        };
+        CableLayer.BeginAnimation(OpacityProperty, fade);
     }
 
     // the steps that need the controller by cable stay disabled until it is there
@@ -171,7 +258,6 @@ public partial class MainWindow : Window
         var ready = !_busy;
         var byCable = _modes.Contains("cable") || _modes.Contains("cable_360") || _modes.Contains("boot");
 
-        RefreshButton.IsEnabled = ready;
         BackupButton.IsEnabled = ready && byCable;
         CheckButton.IsEnabled = ready && byCable;
 
@@ -330,8 +416,6 @@ public partial class MainWindow : Window
         SetupView.Visibility = about ? Visibility.Collapsed : Visibility.Visible;
         AboutView.Visibility = about ? Visibility.Visible : Visibility.Collapsed;
     }
-
-    private async void Refresh_Click(object sender, RoutedEventArgs e) => await RefreshDevicesAsync();
 
     private async void Backup_Click(object sender, RoutedEventArgs e)
     {

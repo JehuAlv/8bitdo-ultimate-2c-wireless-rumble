@@ -69,10 +69,10 @@
                 <Border Background="{StaticResource HeroGlow}" BorderBrush="#2B3550" BorderThickness="1"
                         CornerRadius="16" Padding="14,10,14,14">
                     <StackPanel>
-                        <Viewbox Height="232" Stretch="Uniform">
-                          <Canvas Width="246" Height="194">
+                        <Viewbox Height="258" Stretch="Uniform">
+                          <Canvas Width="246" Height="216">
                             <Canvas.RenderTransform>
-                                <TranslateTransform X="-78" Y="-32"/>
+                                <TranslateTransform X="-78" Y="-10"/>
                             </Canvas.RenderTransform>
                             <Canvas Width="400" Height="240">
                                 <!-- glow behind the body -->
@@ -185,6 +185,81 @@
                                          Fill="#221B3D" Stroke="#6D5BFF" StrokeThickness="1.4"/>
                                 <Path Fill="#B8A8FF"
                                       Data="M199 64.6 L200.4 66.6 L202.4 68 L200.4 69.4 L199 71.4 L197.6 69.4 L195.6 68 L197.6 66.6 Z"/>
+
+                                <!-- usb-c port on the top edge -->
+                                <Rectangle Canvas.Left="194.6" Canvas.Top="45.4" Width="10.8" Height="3.6"
+                                           RadiusX="1.5" RadiusY="1.5" Fill="#0A0E18" Stroke="#4A5878" StrokeThickness="0.8"/>
+
+                                <!-- cable plugged into the top edge, shown only over USB -->
+                                <Canvas x:Name="CableLayer" Opacity="0" Visibility="Collapsed" IsHitTestVisible="False">
+                                    <Canvas.Resources>
+                                        <Storyboard x:Key="CablePulse">
+                                            <DoubleAnimation Storyboard.TargetName="CableGlowScale" Storyboard.TargetProperty="ScaleX"
+                                                             From="0.9" To="1.12" Duration="0:0:1.6" AutoReverse="True"
+                                                             RepeatBehavior="Forever"/>
+                                            <DoubleAnimation Storyboard.TargetName="CableGlowScale" Storyboard.TargetProperty="ScaleY"
+                                                             From="0.9" To="1.12" Duration="0:0:1.6" AutoReverse="True"
+                                                             RepeatBehavior="Forever"/>
+                                            <DoubleAnimation Storyboard.TargetName="CableGlow" Storyboard.TargetProperty="Opacity"
+                                                             From="0.18" To="0.42" Duration="0:0:1.6" AutoReverse="True"
+                                                             RepeatBehavior="Forever"/>
+                                            <DoubleAnimation Storyboard.TargetName="CableFlow" Storyboard.TargetProperty="StrokeDashOffset"
+                                                             From="0" To="-11" Duration="0:0:1.2" RepeatBehavior="Forever"/>
+                                        </Storyboard>
+                                    </Canvas.Resources>
+
+                                    <Ellipse x:Name="CableGlow" Canvas.Left="188" Canvas.Top="32" Width="24" Height="24"
+                                             Opacity="0.26" IsHitTestVisible="False">
+                                        <Ellipse.Fill>
+                                            <RadialGradientBrush>
+                                                <GradientStop Color="#8B6CFF" Offset="0"/>
+                                                <GradientStop Color="#22D3EE" Offset="0.55"/>
+                                                <GradientStop Color="#00000000" Offset="1"/>
+                                            </RadialGradientBrush>
+                                        </Ellipse.Fill>
+                                        <Ellipse.RenderTransform>
+                                            <ScaleTransform x:Name="CableGlowScale" CenterX="12" CenterY="12"/>
+                                        </Ellipse.RenderTransform>
+                                    </Ellipse>
+
+                                    <!-- straight cable that leaves the frame at the top -->
+                                    <Path Stroke="#2E3956" StrokeThickness="4.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          Data="M203.2,-4 C203.4,8 202.6,22 200,31.5">
+                                        <Path.Effect>
+                                            <DropShadowEffect BlurRadius="3" ShadowDepth="0" Opacity="0.45" Color="#05070D"/>
+                                        </Path.Effect>
+                                    </Path>
+                                    <Path Stroke="#5A6A96" StrokeThickness="1.6" Opacity="0.8"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          Data="M201.9,-3 C202.1,8.6 201.4,21.8 198.8,30"/>
+                                    <Path x:Name="CableFlow" Stroke="#CFE9FF" StrokeThickness="1.8" Opacity="0.9"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          StrokeDashArray="2 7"
+                                          Data="M203.2,-4 C203.4,8 202.6,22 200,31.5"/>
+
+                                    <!-- strain relief -->
+                                    <Rectangle Canvas.Left="197.4" Canvas.Top="30.6" Width="5.2" Height="6.6"
+                                               RadiusX="1.9" RadiusY="1.9" Fill="#414B66"/>
+                                    <Rectangle Canvas.Left="197.4" Canvas.Top="32.2" Width="5.2" Height="0.8" Fill="#252D42"/>
+                                    <Rectangle Canvas.Left="197.4" Canvas.Top="34.1" Width="5.2" Height="0.8" Fill="#252D42"/>
+
+                                    <!-- usb-c plug sitting on the port -->
+                                    <Rectangle Canvas.Left="195.2" Canvas.Top="36.6" Width="9.6" Height="8.4"
+                                               RadiusX="2.2" RadiusY="2.2">
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#C8D1E4" Offset="0"/>
+                                                <GradientStop Color="#8C98B4" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Rectangle Canvas.Left="196.4" Canvas.Top="37.7" Width="7.2" Height="1"
+                                               RadiusX="0.5" RadiusY="0.5" Fill="#EDF2FB" Opacity="0.55"/>
+                                    <Rectangle Canvas.Left="196.8" Canvas.Top="44.5" Width="6.4" Height="3.8"
+                                               RadiusX="1.4" RadiusY="1.4" Fill="#5E6982"/>
+                                    <Rectangle Canvas.Left="197.8" Canvas.Top="46" Width="4.4" Height="1.4"
+                                               RadiusX="0.7" RadiusY="0.7" Fill="#141A28"/>
+                                </Canvas>
                             </Canvas>
                           </Canvas>
                         </Viewbox>
@@ -312,11 +387,6 @@
                                             <TextBlock x:Name="ConnectionChipText" FontSize="11.5" FontWeight="SemiBold"
                                                        Foreground="{StaticResource MutedBrush}" Text="Not found"/>
                                         </Border>
-                                        <Button x:Name="RefreshButton" AutomationProperties.AutomationId="RefreshButton" Style="{StaticResource GhostButton}" Margin="6,0,0,0"
-                                                Click="Refresh_Click" ToolTip="Look for the controller again" Padding="6">
-                                            <Path Data="{StaticResource IconRefresh}" Width="15" Height="15" Stretch="Uniform"
-                                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
-                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Border>
